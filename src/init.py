@@ -1,6 +1,7 @@
 # Import necessary modules
+import time
 from qrcode import qr_functions
-from client import Client
+from client import client
 from image_recognition import faces_functions
 import cv2
 import numpy as np
@@ -19,7 +20,7 @@ tickets_this_round = 0
 average_this_round = []
 parse_amount = 20
 
-cl = Client(url)
+cl = client.Client(url)
 
 
 # Define a function to reset variables for a new round
@@ -50,6 +51,7 @@ def main():
     global passengers_this_round
     global get_ticket
     global passengers
+    global cl
     init()
     # Loop over each frame from the video stream
     for frame in cl.get_video_stream(url):
@@ -64,6 +66,7 @@ def main():
 
         # Check if it's time to move forward
         if move_froward:
+            cl.display("Going to next row")
             cl.move()
             move_froward = False
             reset_round()
@@ -72,6 +75,8 @@ def main():
 
         # Check if it's time to detect people
         if detect_people:
+            cl.display("Scanning ...")
+
             # Keep track of the number of bodies detected in each frame
             if len(average_this_round) >= parse_amount:
                 detect_people = False
@@ -86,12 +91,17 @@ def main():
 
         # Check if it's time to get a ticket
         if get_ticket:
+            cl.display("Tickets Please ...")
+
             if qr_functions.identify_qr_codes(frame):
                 get_ticket = False
-
                 if next_step_move:
+                    cl.display("Thank you, Have a safe trip", 1)
+                    time.sleep(3)
                     move_froward = True
                 else:
+                    cl.display("Thank you, Have a safe trip", 1)
+                    time.sleep(3)
                     cl.moveCamera(turn_camera_180)
                     turn_camera_180 = not turn_camera_180
                     reset_round()

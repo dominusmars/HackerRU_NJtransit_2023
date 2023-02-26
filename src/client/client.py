@@ -41,3 +41,9 @@ class Client:
     def turn_around(self):
         response = requests.post(self.url+"/turn_around")
         return response.text
+
+    #display a message, smile=1 appends a smile to the end of the message
+    def display(self, msg, smile = 0):
+        message = {'msg':msg,'smile': smile}
+        response = requests.post(self.url + "/display", message)
+        return response.text

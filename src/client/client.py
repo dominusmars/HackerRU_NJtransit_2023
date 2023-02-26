@@ -32,11 +32,11 @@ class Client:
                 frame = cv2.imdecode(np.frombuffer(frame_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
                 yield frame
 
-    def move(self):
+    def move_camera(self):
         response = requests.post(self.url+"/move_camera")
         return response.text
 
-    def moveCamera(self):
+    def move_forward(self):
         response = requests.post(self.url+"/move_forward")
         return response.text
 
@@ -48,4 +48,8 @@ class Client:
     def display(self, msg, smile = 0):
         message = {'msg':msg,'smile': smile}
         response = requests.post(self.url + "/display", json=message)
+        return response.text
+
+    def move_backward(self):
+        response = requests.post(self.url + "/move_backward")
         return response.text

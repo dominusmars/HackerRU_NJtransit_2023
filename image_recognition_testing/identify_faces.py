@@ -1,7 +1,7 @@
 import cv2
 
 # Load the classifier for lower body detection
-body_cascade = cv2.CascadeClassifier('haarcascade_profileface.xml')
+body_cascade = cv2.CascadeClassifier('/xml/haarcascade_profileface.xml')
 
 # Open a video capture stream from the default camera
 cap = cv2.VideoCapture(0)

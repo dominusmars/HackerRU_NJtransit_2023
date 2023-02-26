@@ -1,4 +1,3 @@
-# Import necessary modules
 import time
 from qrcode import qr_functions
 from client import client
@@ -15,6 +14,7 @@ next_step_move = False
 get_ticket = False
 move_froward = False
 turn_camera_180 = False
+sent = False
 passengers = 0
 passengers_this_round = -1
 tickets_this_round = 0
@@ -50,6 +50,7 @@ def main():
     global passengers_this_round
     global get_ticket
     global passengers
+    global sent
     global cl
     init()
     # Loop over each frame from the video stream
@@ -68,17 +69,23 @@ def main():
 
         # Check if it's time to move forward
         if move_froward:
-            cl.display("Going to next row")
-            cl.move()
+            if not sent:
+                cl.display("Going to next row")
+                cl.move_forward(1)
+                time.sleep(4)
+                sent = True
             move_froward = False
             reset_round()
             detect_people = True
+            sent = False
             continue
 
         # Check if it's time to detect people
         if detect_people:
-            print("scanning ...")
-            cl.display("Scanning ...")
+            if not sent:
+                print("scanning ...")
+                cl.display("Scanning ...")
+                sent = True
 
             # Keep track of the number of bodies detected in each frame
             if len(average_this_round) >= parse_amount:
@@ -88,13 +95,15 @@ def main():
                 passengers = passengers + passengers_this_round
                 print("Passengers detected:", passengers_this_round)
                 print("Total of Passengers:", passengers)
+                sent = False
                 continue
             number_of_bodies = len(bodies)
             average_this_round.append(number_of_bodies)
 
         # Check if it's time to get a ticket
         if get_ticket:
-            cl.display("Tickets Please ...")
+            if not sent:
+                cl.display("Tickets Please ...")
 
             if qr_functions.identify_qr_codes(frame):
                 get_ticket = False
@@ -102,12 +111,14 @@ def main():
                     cl.display("Thank you", 1)
                     time.sleep(3)
                     move_froward = True
+                    sent = False
                 else:
                     cl.display("Thank you", 1)
                     time.sleep(3)
-                    cl.moveCamera()
+                    cl.move_camera()
                     reset_round()
                     detect_people = True
+                    sent = False
 
         # Wait for a key press and check if it's the 'q' key to exit
         if cv2.waitKey(1) & 0xFF == ord("q"):

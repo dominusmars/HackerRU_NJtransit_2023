@@ -17,8 +17,8 @@ while True:
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # Print the shape and data type of the grayscale image
-    # print("Shape:", gray.size)
-    # print("Data type:", gray.dtype)
+    print("Shape:", gray.size)
+    print("Data type:", gray.dtype)
     if len(gray.shape) != 2:
         print("Error: grayscale image has invalid shape:", gray.shape)
         break

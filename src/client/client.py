@@ -2,10 +2,12 @@ import cv2
 import requests
 import numpy as np
 
+
 class Client:
     def __init__(self, api_url, buffer_size=28672):
         self.url = api_url
         self.buffer_size = buffer_size
+
     def get_video_stream(self):
         # Send a request to the video stream URL and read the response stream
         response = requests.get(self.url+"/video_feed", stream=True)
@@ -30,11 +32,11 @@ class Client:
                 frame = cv2.imdecode(np.frombuffer(frame_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
                 yield frame
 
-    def move_camera(self):
+    def move(self):
         response = requests.post(self.url+"/move_camera")
         return response.text
 
-    def move_forward(self):
+    def moveCamera(self):
         response = requests.post(self.url+"/move_forward")
         return response.text
 
@@ -46,8 +48,4 @@ class Client:
     def display(self, msg, smile = 0):
         message = {'msg':msg,'smile': smile}
         response = requests.post(self.url + "/display", json=message)
-        return response.text
-
-    def move_backwards(self):
-        response = requests.post(self.url + "/move_forward")
         return response.text

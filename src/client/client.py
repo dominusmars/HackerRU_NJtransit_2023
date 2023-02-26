@@ -36,8 +36,9 @@ class Client:
         response = requests.post(self.url+"/move_camera")
         return response.text
 
-    def move_forward(self):
-        response = requests.post(self.url+"/move_forward")
+    def move_forward(self, row_length):
+        message = {'length':row_length}
+        response = requests.post(self.url+"/move_forward", json=message)
         return response.text
 
     def turn_around(self):
@@ -50,6 +51,7 @@ class Client:
         response = requests.post(self.url + "/display", json=message)
         return response.text
 
-    def move_backward(self):
-        response = requests.post(self.url + "/move_backward")
+    def move_backward(self, row_length):
+        message = {'length': row_length}
+        response = requests.post(self.url + "/move_backwards", json=message)
         return response.text

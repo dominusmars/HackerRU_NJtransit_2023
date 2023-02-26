@@ -25,3 +25,12 @@ def get_video_stream(url, buffer_size=28672):
             # Decode the video frame and yield it
             frame = cv2.imdecode(np.frombuffer(frame_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
             yield frame
+
+def move():
+    return
+
+def moveCamera(turn):
+    if(turn):
+        return
+    return
+

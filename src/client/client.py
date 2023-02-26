@@ -25,29 +25,3 @@ def get_video_stream(url, buffer_size=28672):
             # Decode the video frame and yield it
             frame = cv2.imdecode(np.frombuffer(frame_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
             yield frame
-
-def display_video_stream(url):
-    # Open a window to display the video stream
-    cv2.namedWindow('Video Stream', cv2.WINDOW_NORMAL)
-    cv2.resizeWindow('Video Stream', 640, 480)
-
-    # Loop over the video frames from the video stream and display each frame
-    for frame in get_video_stream(url):
-        cv2.imshow('Video Stream', frame)
-
-        # Wait for a key press and check if it's the 'q' key to exit
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    # Clean up the window and exit
-    cv2.destroyAllWindows()
-
-def main():
-    # Define the URL of the video stream
-    url = 'http://192.168.212.151:5000/video_feed'
-
-    # Display the video stream from the URL
-    display_video_stream(url)
-
-if __name__ == '__main__':
-    main()

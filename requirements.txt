@@ -11,3 +11,4 @@ PIL
 numpy
 cv2
 zbarlight
+requests

@@ -1,40 +1,53 @@
-import io
-import socket
-import struct
-import time
-import pickle
+import cv2
+import requests
 import numpy as np
-import imutils
 
+def get_video_stream(url, buffer_size=28672):
+    # Send a request to the video stream URL and read the response stream
+    response = requests.get(url, stream=True)
+    byt = bytes()
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# client_socket.connect(('0.tcp.ngrok.io', 19194))
-client_socket.connect(('10.19.15.138', 8485))
+    # Loop over the response stream and yield each video frame
+    for chunk in response.iter_content(chunk_size=buffer_size):
+        # Append the chunk to the byte buffer
+        byt += chunk
 
-cam = cv2.VideoCapture(0)
-img_counter = 0
+        # Find the start and end of the current video frame
+        a = byt.find(b'\xff\xd8')
+        b = byt.find(b'\xff\xd9')
 
-#encode to jpeg format
-#encode param image quality 0 to 100. default:95
-#if you want to shrink data size, choose low image quality.
-encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
+        # If we have a complete video frame, yield it
+        if a != -1 and b != -1:
+            # Extract the video frame from the byte buffer
+            frame_bytes = byt[a:b + 2]
+            byt = byt[b + 2:]
 
-while True:
-    ret, frame = cam.read()
-    frame = imutils.resize(frame, width=320)
-    frame = cv2.flip(frame,180)
-    result, image = cv2.imencode('.jpg', frame, encode_param)
-    data = pickle.dumps(image, 0)
-    size = len(data)
+            # Decode the video frame and yield it
+            frame = cv2.imdecode(np.frombuffer(frame_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
+            yield frame
 
-    if img_counter%10==0:
-        client_socket.sendall(struct.pack(">L", size) + data)
-        cv2.imshow('client',frame)
-        
-    img_counter += 1
+def display_video_stream(url):
+    # Open a window to display the video stream
+    cv2.namedWindow('Video Stream', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('Video Stream', 640, 480)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-    
+    # Loop over the video frames from the video stream and display each frame
+    for frame in get_video_stream(url):
+        cv2.imshow('Video Stream', frame)
 
-cam.release()
+        # Wait for a key press and check if it's the 'q' key to exit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # Clean up the window and exit
+    cv2.destroyAllWindows()
+
+def main():
+    # Define the URL of the video stream
+    url = 'http://192.168.212.151:5000/video_feed'
+
+    # Display the video stream from the URL
+    display_video_stream(url)
+
+if __name__ == '__main__':
+    main()

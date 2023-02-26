@@ -154,27 +154,27 @@ class Motor():
         GPIO.output(self.c, GPIO.LOW)
         GPIO.output(self.d, GPIO.LOW)
         
-t = Motor()
+#t = Motor()
 
-count=0
-while(count < 3):
-    count+=1
-    
-    t.motorupA()
-    time.sleep(2)
-    
-    t.motorstopA()
-    time.sleep(0.5)
-    
-    t.motordownA()
-    time.sleep(2)
-    
-    t.motorstopA()
-    time.sleep(0.5)
+#count=0
+#while(True):
+#    count+=1
+#    
+#    t.motorupA()
+#    time.sleep(2)
+#    
+#    t.motorstopA()
+#    time.sleep(0.5)
+#    
+#    t.motordownA()
+#    time.sleep(2)
+#    
+#    t.motorstopA()
+#    time.sleep(0.5)
     
     
 
-t.motorstopA()
+#t.motorstopA()
         
 
 

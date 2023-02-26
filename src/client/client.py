@@ -8,7 +8,7 @@ class Client:
         self.buffer_size = buffer_size
     def get_video_stream(self):
         # Send a request to the video stream URL and read the response stream
-        response = requests.get(self.url, stream=True)
+        response = requests.get(self.url+"/video_feed", stream=True)
         byt = bytes()
 
         # Loop over the response stream and yield each video frame

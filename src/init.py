@@ -5,7 +5,7 @@ from image_recognition import faces_functions
 import cv2
 import numpy as np
 
-url = "http://192.168.212.151:5000/video_feed"
+url = "http://192.168.212.151:5000"
 
 # Initialize variables
 detect_people = False
@@ -103,5 +103,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # Define the URL for the video stream
     main()

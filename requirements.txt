@@ -1,3 +1,13 @@
+io
+socket
+struct
+time
+pickle
+imutils
+sys
+matplotlib.pyplot
+zlib
+PIL
 numpy
 cv2
 zbarlight

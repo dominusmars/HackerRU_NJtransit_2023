@@ -41,11 +41,6 @@ def main():
     global passengers
     init()
     for frame in client.get_video_stream(url):
-        bodies = faces_functions.find_bodies(frame)
-        final_frame = faces_functions.draw_bodies_on_frame(frame, bodies)
-
-        cv2.imshow('Video Stream', final_frame)
-
         if(move_froward):
             client.move()
             move_froward = False
@@ -61,6 +56,7 @@ def main():
                 print("Passengers detected:  "+ passengers_this_round)
                 print("Total of Passengers: "+ passengers)
                 continue
+            bodies = faces_functions.find_bodies(frame)
             number_of_bodies = len(bodies)
             average_this_round.append(number_of_bodies)
         if(get_ticket):
@@ -76,6 +72,12 @@ def main():
                     detect_people = True
 
 
+
+
+
+        final_frame = faces_functions.draw_bodies_on_frame(frame, bodies)
+       
+        cv2.imshow('Video Stream', final_frame)
 
         # Wait for a key press and check if it's the 'q' key to exit
         if cv2.waitKey(1) & 0xFF == ord('q'):

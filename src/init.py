@@ -1,6 +1,6 @@
 # Import necessary modules
 from qrcode import qr_functions
-from client import client 
+from client import Client
 from image_recognition import faces_functions
 import cv2
 import numpy as np

@@ -5,6 +5,8 @@ from image_recognition import faces_functions
 import cv2
 import numpy as np
 
+url = "http://192.168.212.151:5000/video_feed"
+
 # Initialize variables
 detect_people = False
 next_step_move = False
@@ -17,6 +19,9 @@ tickets_this_round = 0
 average_this_round = []
 parse_amount = 20
 
+cl = Client(url)
+
+
 # Define a function to reset variables for a new round
 def reset_round():
     global average_this_round
@@ -28,12 +33,14 @@ def reset_round():
     global tickets_this_round
     tickets_this_round = 0
     global average_this_round
-    average_this_round= []
-  
+    average_this_round = []
+
+
 # Define a function to initialize movement
 def init():
     global move_froward
-    move_froward = True;
+    move_froward = True
+
 
 # Define the main function
 def main():
@@ -45,7 +52,7 @@ def main():
     global passengers
     init()
     # Loop over each frame from the video stream
-    for frame in client.get_video_stream(url):
+    for frame in cl.get_video_stream(url):
         # Find bodies in the current frame using image recognition
         bodies = faces_functions.find_bodies(frame)
 
@@ -53,49 +60,48 @@ def main():
         final_frame = faces_functions.draw_bodies_on_frame(frame, bodies)
 
         # Display the final frame
-        cv2.imshow('Video Stream', final_frame)
+        cv2.imshow("Video Stream", final_frame)
 
         # Check if it's time to move forward
-        if(move_froward):
-            client.move()
+        if move_froward:
+            cl.move()
             move_froward = False
             reset_round()
             detect_people = True
             continue
 
         # Check if it's time to detect people
-        if(detect_people):
+        if detect_people:
             # Keep track of the number of bodies detected in each frame
-            if(len(average_this_round)  >= parse_amount):
+            if len(average_this_round) >= parse_amount:
                 detect_people = False
                 get_ticket = True
                 passengers_this_round = np.average(average_this_round)
                 passengers = passengers + passengers_this_round
-                print("Passengers detected:  "+ passengers_this_round)
-                print("Total of Passengers: "+ passengers)
+                print("Passengers detected:  " + passengers_this_round)
+                print("Total of Passengers: " + passengers)
                 continue
             number_of_bodies = len(bodies)
             average_this_round.append(number_of_bodies)
 
         # Check if it's time to get a ticket
-        if(get_ticket):
-            if(qr_functions.identify_qr_codes(frame)):
+        if get_ticket:
+            if qr_functions.identify_qr_codes(frame):
                 get_ticket = False
-               
-                if(next_step_move):
+
+                if next_step_move:
                     move_froward = True
                 else:
-                    client.moveCamera(turn_camera_180)
+                    cl.moveCamera(turn_camera_180)
                     turn_camera_180 = not turn_camera_180
                     reset_round()
                     detect_people = True
 
-       
         # Wait for a key press and check if it's the 'q' key to exit
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Define the URL for the video stream
-    url = 'http://192.168.212.151:5000/video_feed'
+    main()

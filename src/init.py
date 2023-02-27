@@ -15,6 +15,7 @@ get_ticket = False
 move_froward = False
 turn_camera_180 = False
 sent = False
+process_frame = False
 passengers = 0
 passengers_this_round = -1
 tickets_this_round = 0
@@ -52,9 +53,15 @@ def main():
     global passengers
     global sent
     global cl
+    global process_frame
     init()
     # Loop over each frame from the video stream
     for frame in cl.get_video_stream():
+        if not process_frame:
+            cv2.imshow("Video Stream", frame)
+            process_frame = True
+            continue
+
         # Find bodies in the current frame using image recognition
         if not get_ticket:
             bodies = faces_functions.find_bodies(frame)
@@ -89,9 +96,16 @@ def main():
 
             # Keep track of the number of bodies detected in each frame
             if len(average_this_round) >= parse_amount:
+                passengers_this_round = math.ceil(np.average(average_this_round))
+                if passengers_this_round == 0:
+                    print("No Passengers Detected")
+                    sent = False
+                    detect_people = False
+                    move_froward = True
+                    reset_round()
+                    continue
                 detect_people = False
                 get_ticket = True
-                passengers_this_round = math.ceil(np.average(average_this_round))
                 passengers = passengers + passengers_this_round
                 print("Passengers detected:", passengers_this_round)
                 print("Total of Passengers:", passengers)
@@ -104,6 +118,7 @@ def main():
         if get_ticket:
             if not sent:
                 cl.display("Tickets Please ...")
+                sent = True
 
             if qr_functions.identify_qr_codes(frame):
                 get_ticket = False
